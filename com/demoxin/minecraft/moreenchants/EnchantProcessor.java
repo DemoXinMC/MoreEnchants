@@ -50,6 +50,9 @@ public class EnchantProcessor {
 				EntityLivingBase shooter = (EntityLivingBase)((EntityArrow)fEvent.entity).shootingEntity;
 				ItemStack itemBow = shooter.getHeldItem();
 				
+				if(itemBow == null)
+					return;
+				
 				// Make sure our data int is nice and set-up.
 				fEvent.entity.getDataWatcher().addObject(24, Integer.valueOf(0));
 				
