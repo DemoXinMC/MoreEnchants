@@ -1,0 +1,19 @@
+[
+{
+  "modid": "MoreEnchants",
+  "name": "MoreEnchants",
+  "description": "New Enchantments!  Featuring Numerous Vanilla-esque enchantments along with some unique mechanics in the new Armor Enchants!\n*** 1.1.1 BugFixes ***\n\n * Dogs and Iron Golems should not longer hate you for healing them. Zombie Pigmen still aren't fans.\n * Removed Knockback and Damage Indications for Hits with Mending\n * Increased the dodge chance of Agility to 25%\n * Corrected a Localization Bug\n * Corrected NPEs when disabling enchantments\n * Melee Mending now offers visual feedback",
+  "version": "1.1.1",
+  "credits": "Created by DemoXin",
+  "logoFile": "",
+  "mcversion": "1.6",
+  "url": "http://minecraft.demoxin.com/MoreEnchants",
+  "updateUrl": "",
+  "authors": [ "DemoXin" ],
+  "parent":"",
+  "screenshots": [],
+  "dependencies": [
+         "Forge"
+]
+}
+]
