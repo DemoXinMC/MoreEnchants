@@ -1,11 +1,23 @@
 package com.demoxin.minecraft.moreenchants;
 
+import java.util.UUID;
+
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeInstance;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 
 public class Enchantment_Fleetfooted extends Enchantment {
+	
+	public static UUID fleetfootUUID = UUID.fromString("edff168f-32d7-438b-8d29-189e9405e032");
+	
 	public Enchantment_Fleetfooted(int fId, int fWeight)
 	{
 		super(fId, fWeight, EnumEnchantmentType.armor_feet);
@@ -51,4 +63,52 @@ public class Enchantment_Fleetfooted extends Enchantment {
     	}
         return false;
     }
+    
+    @ForgeSubscribe
+    public void HandleEnchant(LivingUpdateEvent fEvent)
+    {
+    	if(!(fEvent.entity instanceof EntityLivingBase))
+    		return;
+    	
+    	EntityLivingBase entity = (EntityLivingBase)fEvent.entity;
+		ItemStack boots = entity.getCurrentItemOrArmor(1);
+		
+		if(boots == null)
+		{
+			RemoveSpeedBuff(entity);
+			return;
+		}
+		
+		int level = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantFleetfoot.effectId, boots);
+		
+		if(level > 0)
+			AddSpeedBuff(entity);
+		else
+			RemoveSpeedBuff(entity);
+    }
+    
+    private void AddSpeedBuff(EntityLivingBase fEntity)
+	{
+		AttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+		
+		if(speedAttr.getModifier(fleetfootUUID) != null)
+			return;
+		
+		AttributeModifier modSpeed = new AttributeModifier(fleetfootUUID, "FleetfootedBoots", 0.2D, 1); 
+		
+		// Creatures and Players use 2 different values here
+		speedAttr.removeModifier(modSpeed);
+		speedAttr.applyModifier(modSpeed);
+	}
+	
+	private void RemoveSpeedBuff(EntityLivingBase fEntity)
+	{
+		AttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+				
+		if(speedAttr.getModifier(fleetfootUUID) == null)
+			return;
+		
+		AttributeModifier modSpeed = new AttributeModifier(fleetfootUUID, "FleetfootedBoots", 0.2D, 1);
+		speedAttr.removeModifier(modSpeed);
+	}
 }
