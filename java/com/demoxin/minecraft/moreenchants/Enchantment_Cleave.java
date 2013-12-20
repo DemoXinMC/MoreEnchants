@@ -9,11 +9,15 @@ import net.minecraft.enchantment.EnchantmentKnockback;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -108,9 +112,33 @@ public class Enchantment_Cleave extends Enchantment {
 			if(angle < 60.0D)
 			{
 				// This is within our arc, let's deal our damage.
-				target.attackEntityFrom(DamageSource.generic, splashDamage);
+				DamageSource source = null;
+				if(attacker instanceof EntityPlayer)
+					source = new EntityDamageSource("player", attacker);
+				if(attacker instanceof EntityMob)
+					source = new EntityDamageSource("mob", attacker);
+				
+				if(source != null)
+				{
+					target.attackEntityFrom(DamageSource.generic, splashDamage);
+				}
+				
+				if(attacker instanceof EntityPlayer)
+				{
+					// Apply knockback
+					int modKnockback = 1;
+					modKnockback += EnchantmentHelper.getKnockbackModifier(attacker, (EntityLivingBase)target);
+					if(attacker.isSprinting())
+						modKnockback++;
+					
+					if(modKnockback > 0)
+						target.addVelocity((double)(-MathHelper.sin(attacker.rotationYaw * (float)Math.PI / 180.0F) * (float)modKnockback * 0.5F), 0.1D, (double)(MathHelper.cos(attacker.rotationYaw * (float)Math.PI / 180.0F) * (float)modKnockback * 0.5F));
+				}
 			}
 		}
+		
+		// Stop the player sprinting
+		attacker.setSprinting(false);
     }
 
 }
