@@ -41,7 +41,7 @@ public class Enchantment_Defusing extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Defusing || fTest instanceof EnchantmentDamage)
+    	if(fTest instanceof Enchantment_Defusing || fTest instanceof Enchantment_Disjunction || fTest instanceof Enchantment_Dowsing || fTest instanceof EnchantmentDamage)
     		return false;
     	return true;
     }

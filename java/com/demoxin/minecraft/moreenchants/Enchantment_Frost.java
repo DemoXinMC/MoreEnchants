@@ -18,11 +18,12 @@ import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
-public class Enchantment_Poison extends Enchantment {
-	public Enchantment_Poison(int fId, int fWeight)
+public class Enchantment_Frost extends Enchantment
+{
+	public Enchantment_Frost(int fId, int fWeight)
 	{
 		super(fId, fWeight, EnumEnchantmentType.bow);
-		this.setName("poison");
+		this.setName("frost");
 		addToBookList(this);
 	}
 	
@@ -74,7 +75,7 @@ public class Enchantment_Poison extends Enchantment {
 		if(itemBow == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantPoison.effectId, itemBow) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantFrost.effectId, itemBow) <= 0)
 			return;
 		
 		boolean bitsafe = false;
@@ -91,7 +92,7 @@ public class Enchantment_Poison extends Enchantment {
 		if(!bitsafe)
 			fEvent.entity.getDataWatcher().addObject(24, Integer.valueOf(0));
 		
-		fEvent.entity.getDataWatcher().updateObject(24, fEvent.entity.getDataWatcher().getWatchableObjectInt(24) + Integer.valueOf(MoreEnchants.bitPOISON));
+		fEvent.entity.getDataWatcher().updateObject(24, fEvent.entity.getDataWatcher().getWatchableObjectInt(24) + Integer.valueOf(MoreEnchants.bitICE));
     }
     
     @ForgeSubscribe
@@ -124,11 +125,11 @@ public class Enchantment_Poison extends Enchantment {
 		
 		int infoBits = strikingArrow.getDataWatcher().getWatchableObjectInt(24);
 
-		if((infoBits & MoreEnchants.bitPOISON) != 0)
+		if((infoBits & MoreEnchants.bitICE) != 0)
 		{
-			PotionEffect poisonResult;
-			poisonResult = new PotionEffect(Potion.poison.getId(), 120, 1);		
-			((EntityLivingBase)fEvent.entity).addPotionEffect(poisonResult);	
+			PotionEffect slowResult;
+			slowResult = new PotionEffect(Potion.moveSlowdown.getId(), 60, 1);		
+			((EntityLivingBase)fEvent.entity).addPotionEffect(slowResult);	
 		}
     }
 }

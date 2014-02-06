@@ -13,11 +13,11 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
-public class Enchantment_Venom extends Enchantment {
-	public Enchantment_Venom(int fId, int fWeight)
+public class Enchantment_IceAspect extends Enchantment {
+	public Enchantment_IceAspect(int fId, int fWeight)
 	{
 		super(fId, fWeight, EnumEnchantmentType.weapon);
-		this.setName("venom");
+		this.setName("iceaspect");
 		addToBookList(this);
 	}
 	
@@ -42,7 +42,7 @@ public class Enchantment_Venom extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Venom || fTest instanceof EnchantmentFireAspect || fTest instanceof Enchantment_IceAspect)
+    	if(fTest instanceof Enchantment_Venom || fTest instanceof EnchantmentFireAspect || fTest instanceof Enchantment_Mending || fTest instanceof Enchantment_IceAspect)
     		return false;
     	return true;
     }
@@ -71,10 +71,15 @@ public class Enchantment_Venom extends Enchantment {
 		if(dmgSource == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantVenom.effectId, dmgSource) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantIceAspect.effectId, dmgSource) <= 0)
 			return;
 		
-		int levelVenom = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantVenom.effectId, dmgSource);
-		((EntityLivingBase)fEvent.entity).addPotionEffect(new PotionEffect(Potion.poison.getId(), 60, levelVenom));
+		int level = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantIceAspect.effectId, dmgSource);
+		
+		((EntityLivingBase)fEvent.entity).addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(), 60, level));
+		if(level == 2)
+			((EntityLivingBase)fEvent.entity).addPotionEffect(new PotionEffect(Potion.digSlowdown.getId(), 60, level));
+			
     }
 }
+

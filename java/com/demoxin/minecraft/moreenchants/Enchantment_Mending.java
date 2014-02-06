@@ -52,7 +52,7 @@ public class Enchantment_Mending extends Enchantment {
     
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Mending)
+    	if(fTest instanceof Enchantment_Mending || fTest instanceof Enchantment_Leech || fTest instanceof Enchantment_Execution)
     		return false;
     	if(fTest instanceof EnchantmentKnockback || fTest instanceof EnchantmentArrowKnockback || fTest instanceof EnchantmentArrowFire || fTest instanceof EnchantmentFireAspect)
         	return false;
@@ -143,6 +143,8 @@ public class Enchantment_Mending extends Enchantment {
 				float dmgMod = 0.3F;
 				if((infoBits & MoreEnchants.bitMENDING2) != 0)
 					dmgMod = dmgMod + 0.2F;
+				
+				strikingArrow.setDead();
 				
 				((EntityLivingBase)fEvent.entity).heal(fEvent.ammount * dmgMod);
 				
