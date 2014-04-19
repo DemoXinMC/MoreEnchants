@@ -6,8 +6,8 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Agility extends Enchantment {
 	public Enchantment_Agility(int fId, int fWeight)
@@ -38,7 +38,7 @@ public class Enchantment_Agility extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Agility)
+    	if(fTest == MoreEnchants.enchantAgility || fTest == MoreEnchants.enchantMobility)
     		return false;
     	return true;
     }
@@ -56,27 +56,27 @@ public class Enchantment_Agility extends Enchantment {
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingAttackEvent fEvent)
     {
-    	// We need mobs, players, and arrows.
-    	if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob" && fEvent.source.damageType != "arrow")
+    	// We only need arrows.
+    	if(fEvent.source.damageType != "arrow")
 			return;
     	
     	if(!(fEvent.entity instanceof EntityLivingBase))
     		return;
     	
     	EntityLivingBase victim = (EntityLivingBase)fEvent.entity;
-		ItemStack armorLegs = victim.getCurrentItemOrArmor(2);
+		ItemStack armorLegs = victim.getEquipmentInSlot(2);
 				
 		if(armorLegs == null)
 			return;
 				
 		// See if we have agility.  Only should be 1 level
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantAgility.effectId, armorLegs) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, armorLegs) <= 0)
 			return;
 		
-		if(fEvent.entity.worldObj.rand.nextInt(100) < 25)
+		if(fEvent.entity.worldObj.rand.nextInt(100) < 40)
 			fEvent.setCanceled(true);
     }
 }

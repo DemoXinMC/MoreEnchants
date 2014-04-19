@@ -6,8 +6,8 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Mobility extends Enchantment
 {	
@@ -39,7 +39,7 @@ public class Enchantment_Mobility extends Enchantment
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Agility)
+    	if(fTest == MoreEnchants.enchantAgility || fTest == MoreEnchants.enchantMobility)
     		return false;
     	return true;
     }
@@ -57,14 +57,14 @@ public class Enchantment_Mobility extends Enchantment
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingUpdateEvent fEvent)
     {
     	if(!(fEvent.entity instanceof EntityLivingBase))
     		return;
     	
     	EntityLivingBase entity = (EntityLivingBase)fEvent.entity;
-		ItemStack pants = entity.getCurrentItemOrArmor(2);
+		ItemStack pants = entity.getEquipmentInSlot(2);
 		
 		if(pants == null)
 		{
@@ -72,7 +72,7 @@ public class Enchantment_Mobility extends Enchantment
 			return;
 		}
 		
-		int level = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantMobility.effectId, pants);
+		int level = EnchantmentHelper.getEnchantmentLevel(effectId, pants);
 		
 		if(level > 0)
 			AddMovementBuff(entity);

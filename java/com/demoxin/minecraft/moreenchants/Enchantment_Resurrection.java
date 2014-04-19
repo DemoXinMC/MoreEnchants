@@ -9,8 +9,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.common.ISpecialArmor.ArmorProperties;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Resurrection extends Enchantment
 {
@@ -51,17 +52,16 @@ public class Enchantment_Resurrection extends Enchantment
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingHurtEvent fEvent)
     {
     	if(!(fEvent.entity instanceof EntityPlayer))
     		return;
     	
     	EntityPlayer deadPlayer = (EntityPlayer)fEvent.entity;
-    	if((deadPlayer.getHealth() + deadPlayer.getAbsorptionAmount()) > fEvent.ammount)
-    		return;
-    	
     	IInventory playerInv = deadPlayer.inventory;
+    	if((deadPlayer.getHealth() + deadPlayer.getAbsorptionAmount()) > (ArmorProperties.ApplyArmor(fEvent.entityLiving, deadPlayer.inventory.armorInventory, fEvent.source, fEvent.ammount)))
+    		return;
     	
     	for(int i = 0; i < playerInv.getSizeInventory(); i++)
     	{
@@ -73,7 +73,7 @@ public class Enchantment_Resurrection extends Enchantment
     		@SuppressWarnings("unchecked")
 			Map<Short, Short> enchantList = EnchantmentHelper.getEnchantments(checkItem);
     		
-    		if(enchantList.containsKey(MoreEnchants.enchantResurrection.effectId))
+    		if(enchantList.containsKey(effectId))
     		{
     			playerInv.setInventorySlotContents(i, null);
     			fEvent.setCanceled(true);

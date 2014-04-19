@@ -7,12 +7,12 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeInstance;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Steadfast extends Enchantment
 {
@@ -46,7 +46,7 @@ public class Enchantment_Steadfast extends Enchantment
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Steadfast)
+    	if(fTest == MoreEnchants.enchantBerserk || fTest == MoreEnchants.enchantSteadfast)
     		return false;
     	return true;
     }
@@ -64,14 +64,14 @@ public class Enchantment_Steadfast extends Enchantment
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingUpdateEvent fEvent)
     {
     	if(!(fEvent.entity instanceof EntityLivingBase))
     		return;
     	
     	EntityLivingBase entity = (EntityLivingBase)fEvent.entity;
-		ItemStack boots = entity.getCurrentItemOrArmor(3);
+		ItemStack boots = entity.getEquipmentInSlot(3);
 		
 		if(boots == null)
 		{
@@ -79,7 +79,7 @@ public class Enchantment_Steadfast extends Enchantment
 			return;
 		}
 		
-		int level = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantSteadfast.effectId, boots);
+		int level = EnchantmentHelper.getEnchantmentLevel(effectId, boots);
 		
 		if(level > 0)
 			AddKnockbackBuff(entity);
@@ -89,7 +89,7 @@ public class Enchantment_Steadfast extends Enchantment
     
     private void AddKnockbackBuff(EntityLivingBase fEntity)
 	{
-		AttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance);
+		IAttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance);
 		
 		if(speedAttr.getModifier(steadfastUUID) != null)
 			return;
@@ -103,7 +103,7 @@ public class Enchantment_Steadfast extends Enchantment
 	
 	private void RemoveKnockbackBuff(EntityLivingBase fEntity)
 	{
-		AttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance);
+		IAttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.knockbackResistance);
 				
 		if(speedAttr.getModifier(steadfastUUID) == null)
 			return;

@@ -1,6 +1,7 @@
 package com.demoxin.minecraft.moreenchants;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -9,27 +10,55 @@ import net.minecraft.enchantment.EnchantmentDigging;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentUntouching;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.UseHoeEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.oredict.OreDictionary;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Harvest extends Enchantment
 {
+	protected List<ItemStack> harvestableOres;
+	
 	protected Enchantment_Harvest(int par1, int par2)
     {
         super(par1, par2, EnumEnchantmentType.digger);
         this.setName("harvest");
         addToBookList(this);
     }
+	
+	public void Prepare()
+	{
+        harvestableOres = new ArrayList<ItemStack>();
+        
+        String[] oreDictNames = OreDictionary.getOreNames();
+        
+        for(String orename : oreDictNames)
+        {
+        	if(orename.contains("ore") || orename.contains("gem") || orename.contains("dust") || orename.contains("crystal"))
+        	{
+        		ArrayList<ItemStack> ores = OreDictionary.getOres(orename);
+        		for(ItemStack ore : ores)
+        		{
+        			if(!harvestableOres.contains(ore))
+        				harvestableOres.add(ore);
+        		}
+        	}
+        }
+        
+        harvestableOres.add(new ItemStack(Items.coal));
+        harvestableOres.add(new ItemStack(Items.quartz));
+        harvestableOres.add(new ItemStack(Items.glowstone_dust));
+        harvestableOres.add(new ItemStack(Items.dye, 1, 4));
+	}
 	
 	protected class Coords
 	{
@@ -83,18 +112,21 @@ public class Enchantment_Harvest extends Enchantment
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandlePick(HarvestDropsEvent fEvent)
     {
     	if(fEvent.harvester == null)
     		return;
     	
-    	if(fEvent.block == Block.stone || fEvent.block == Block.cobblestone || fEvent.block == Block.netherrack || fEvent.block == Block.whiteStone)
+    	if(fEvent.block == Blocks.stone || fEvent.block == Blocks.cobblestone || fEvent.block == Blocks.netherrack || fEvent.block == Blocks.end_stone)
     		return;
     	
     	ItemStack harvestingItem = fEvent.harvester.getCurrentEquippedItem();
     	
-    	if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantHarvest.effectId, harvestingItem) <= 0)
+    	if(harvestingItem == null)
+    		return;
+    	
+    	if(EnchantmentHelper.getEnchantmentLevel(effectId, harvestingItem) <= 0)
     		return;
     	
     	int searchX = fEvent.x-3;
@@ -103,16 +135,20 @@ public class Enchantment_Harvest extends Enchantment
     	
     	ArrayList<Coords> breakBlocks = new ArrayList<Coords>();
     	
-    	ArrayList<ItemStack> testForOre = fEvent.block.getBlockDropped(fEvent.world, searchX, searchY, searchZ, fEvent.blockMetadata, fEvent.fortuneLevel);
+    	ArrayList<ItemStack> testForOre = fEvent.block.getDrops(fEvent.world, searchX, searchY, searchZ, fEvent.blockMetadata, fEvent.fortuneLevel);
 		ForgeEventFactory.fireBlockHarvesting(testForOre, fEvent.world, fEvent.block, searchX, searchY, searchZ, fEvent.blockMetadata, fEvent.fortuneLevel, fEvent.dropChance, false, null);
 		boolean testOre = false;
 		for(ItemStack stack : testForOre)
 		{
-			if(OreDictionary.getOreName(OreDictionary.getOreID(stack)).contains("ore") || OreDictionary.getOreName(OreDictionary.getOreID(stack)).contains("gem"))
+			for(ItemStack harvestable : harvestableOres)
 			{
-				testOre = true;
-				break;
+				if(harvestable.isItemEqual(stack))
+				{
+					testOre = true;
+					break;
+				}
 			}
+			
 		}
 		if(testOre == false)
 			return;
@@ -125,15 +161,15 @@ public class Enchantment_Harvest extends Enchantment
     			searchZ = fEvent.z-3;
     			for(int k = 0; k < 7; k++, searchZ++)
     			{
-    				int blockID = fEvent.world.getBlockId(searchX, searchY, searchZ);
+    				Block block = fEvent.world.getBlock(searchX, searchY, searchZ);
     				int blockMeta = fEvent.world.getBlockMetadata(searchX, searchY, searchZ);
     				
-    				if(blockID == 0)
+    				if(block == null)
     					continue;
     				if(blockMeta < 0 || blockMeta > 15)
     					blockMeta = 0;
     				
-    				ArrayList<ItemStack> itemsDropped = Block.blocksList[blockID].getBlockDropped(fEvent.world, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel);
+    				ArrayList<ItemStack> itemsDropped = block.getDrops(fEvent.world, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel);
     				ForgeEventFactory.fireBlockHarvesting(itemsDropped, fEvent.world, fEvent.block, searchX, searchY, searchZ, fEvent.blockMetadata, fEvent.fortuneLevel, fEvent.dropChance, fEvent.isSilkTouching, null);
     				
     				if(itemsDropped.isEmpty())
@@ -161,7 +197,7 @@ public class Enchantment_Harvest extends Enchantment
     	float avgDrop = fEvent.dropChance;
     	for(Coords targetBlock : breakBlocks)
     	{
-			ArrayList<ItemStack> itemsToDrop = fEvent.block.getBlockDropped(fEvent.world, targetBlock.x, targetBlock.y, targetBlock.z, fEvent.blockMetadata, fEvent.fortuneLevel);
+			ArrayList<ItemStack> itemsToDrop = fEvent.block.getDrops(fEvent.world, targetBlock.x, targetBlock.y, targetBlock.z, fEvent.blockMetadata, fEvent.fortuneLevel);
     		avgDrop += ForgeEventFactory.fireBlockHarvesting(itemsToDrop, fEvent.world, fEvent.block, targetBlock.x, targetBlock.y, targetBlock.z, fEvent.blockMetadata, fEvent.fortuneLevel, fEvent.dropChance, fEvent.isSilkTouching, null);
     		for(ItemStack stack : itemsToDrop)
     			fEvent.drops.add(stack);
@@ -169,21 +205,24 @@ public class Enchantment_Harvest extends Enchantment
     	}
     	fEvent.dropChance = (avgDrop/(breakBlocks.size()+1));
     	
+    	harvestingItem.damageItem(breakBlocks.size(), fEvent.harvester);
+    	
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleAxe(HarvestDropsEvent fEvent)
     {
     	if(fEvent.harvester == null)
     		return;
     	
     	ItemStack harvestingItem = fEvent.harvester.getCurrentEquippedItem();
-    	
-    	if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantHarvest.effectId, harvestingItem) <= 0)
+    	if(harvestingItem == null || !(harvestingItem.getItem() instanceof ItemAxe))
+    		return;
+    		
+    	if(EnchantmentHelper.getEnchantmentLevel(effectId, harvestingItem) <= 0)
     		return;
     	
     	Block blockObj = fEvent.block;
-    	int blockID = fEvent.block.blockID;
     	
     	if(blockObj == null)
     		return;
@@ -197,8 +236,8 @@ public class Enchantment_Harvest extends Enchantment
     	for(int i = 1; i <= 50; i++)
     	{
     		searchHeight = fEvent.y+i;
-    		int searchID = fEvent.world.getBlockId(fEvent.x, searchHeight, fEvent.z);
-    		if(searchID == blockID)
+    		Block search = fEvent.world.getBlock(fEvent.x, searchHeight, fEvent.z);
+    		if(search == blockObj)
     			continue;
     		
     		foundTop = true;
@@ -216,7 +255,7 @@ public class Enchantment_Harvest extends Enchantment
     		{
     			for(int searchZ = fEvent.z-1; searchZ <= fEvent.z+1; searchZ++)
     			{
-    				Block searchLeaves = Block.blocksList[fEvent.world.getBlockId(searchX, searchY, searchZ)];
+    				Block searchLeaves = fEvent.world.getBlock(searchX, searchY, searchZ);
     				if(searchLeaves == null)
     					continue;
     				if(searchLeaves.isLeaves(fEvent.world, searchX, searchY, searchZ))
@@ -229,28 +268,37 @@ public class Enchantment_Harvest extends Enchantment
     		return;
     	
     	ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
-    	fEvent.world.setBlock(fEvent.x, fEvent.y, fEvent.z, blockID, fEvent.blockMetadata, 2);
-    	drops = BreakTree(fEvent.world, fEvent.x, fEvent.y, fEvent.z, fEvent.fortuneLevel, fEvent.dropChance);
+    	fEvent.world.setBlock(fEvent.x, fEvent.y, fEvent.z, fEvent.block, fEvent.blockMetadata, 2);
+    	drops = BreakTree(fEvent.world, fEvent.x, fEvent.y, fEvent.z, fEvent.fortuneLevel, fEvent.dropChance, fEvent.x, fEvent.z);
     	fEvent.drops.clear();
     	fEvent.drops.addAll(drops);
     }
     
-    protected ArrayList<ItemStack> BreakTree(World fWorld, int fX, int fY, int fZ, int fFortune, float fChance)
+    protected ArrayList<ItemStack> BreakTree(World fWorld, int fX, int fY, int fZ, int fFortune, float fChance, int fOriginX, int fOriginZ)
     {
     	ArrayList<Coords> listCoords = new ArrayList<Coords>();
     	ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
+    	
     	listCoords.add(new Coords(fX-1, fY, fZ));
     	listCoords.add(new Coords(fX+1, fY, fZ));
-    	listCoords.add(new Coords(fX, fY+1, fZ));
     	listCoords.add(new Coords(fX, fY, fZ-1));
     	listCoords.add(new Coords(fX, fY, fZ+1));
     	
-    	int centerBlockID = fWorld.getBlockId(fX, fY, fZ);
-    	Block centerBlockObj = Block.blocksList[centerBlockID];
-    	int centerBlockMeta = fWorld.getBlockMetadata(fX, fY, fZ);
-    	int centerHarvestLevel = MinecraftForge.getBlockHarvestLevel(centerBlockObj, centerBlockMeta, "axe");
+    	listCoords.add(new Coords(fX, fY+1, fZ));
     	
-    	ArrayList<ItemStack> itemsToDrop = centerBlockObj.getBlockDropped(fWorld, fX, fY, fZ, centerBlockMeta, fFortune);
+    	listCoords.add(new Coords(fX-1, fY, fZ-1));
+    	listCoords.add(new Coords(fX+1, fY, fZ-1));
+    	listCoords.add(new Coords(fX-1, fY, fZ+1));
+    	listCoords.add(new Coords(fX+1, fY, fZ+1));
+    	
+    	
+    	Block centerBlockObj = fWorld.getBlock(fX, fY, fZ);
+    	int centerBlockMeta = fWorld.getBlockMetadata(fX, fY, fZ);
+    	if(!centerBlockObj.isToolEffective("axe", centerBlockMeta))
+    		return drops;
+    	int centerHarvestLevel = centerBlockObj.getHarvestLevel(centerBlockMeta);
+    	
+    	ArrayList<ItemStack> itemsToDrop = centerBlockObj.getDrops(fWorld, fX, fY, fZ, centerBlockMeta, fFortune);
     	ForgeEventFactory.fireBlockHarvesting(itemsToDrop, fWorld, centerBlockObj, fX, fY, fZ, centerBlockMeta, fFortune, fChance, false, null);
 		for(ItemStack stack : itemsToDrop)
 			drops.add(stack);
@@ -258,27 +306,32 @@ public class Enchantment_Harvest extends Enchantment
     	
     	for(Coords checkCoord : listCoords)
     	{
-    		int blockID = fWorld.getBlockId(checkCoord.x, checkCoord.y, checkCoord.z);
-    		Block blockObj = Block.blocksList[blockID];
+    		Block blockObj = fWorld.getBlock(checkCoord.x, checkCoord.y, checkCoord.z);
     		if(blockObj == null)
     			continue;
     		int blockMeta = fWorld.getBlockMetadata(checkCoord.x, checkCoord.y, checkCoord.z);
     		
-    		if(MinecraftForge.getBlockHarvestLevel(blockObj, blockMeta, "axe") > centerHarvestLevel)
+    		if(!blockObj.isToolEffective("axe", blockMeta))
+    			continue;
+    		
+    		if(blockObj.getHarvestLevel(blockMeta) > centerHarvestLevel)
     			continue;
     		
     		if(blockObj.isWood(fWorld, checkCoord.x, checkCoord.y, checkCoord.z) || blockObj.isLeaves(fWorld, checkCoord.x, checkCoord.y, checkCoord.z))
-    			drops.addAll(BreakTree(fWorld, checkCoord.x, checkCoord.y, checkCoord.z, fFortune, fChance));
+    		{
+    			if(checkCoord.x < fOriginX+4 && checkCoord.x > fOriginX-4 && checkCoord.z < fOriginZ+4 && checkCoord.z > fOriginZ-4)
+    				drops.addAll(BreakTree(fWorld, checkCoord.x, checkCoord.y, checkCoord.z, fFortune, fChance, fOriginX, fOriginZ));
+    		}	
     	}
     	
-    	Block blockBelow = Block.blocksList[fWorld.getBlockId(fX, fY-1, fZ)];
+    	Block blockBelow = fWorld.getBlock(fX, fY-1, fZ);
     	if(blockBelow != null && blockBelow.isLeaves(fWorld, fX, fY-1, fZ))
-    		drops.addAll(BreakTree(fWorld, fX, fY-1, fZ, fFortune, fChance));
+    		drops.addAll(BreakTree(fWorld, fX, fY-1, fZ, fFortune, fChance, fOriginX, fOriginZ));
     	
     	return drops;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleHoe(HarvestDropsEvent fEvent)
     {
     	if(fEvent.harvester == null)
@@ -288,10 +341,10 @@ public class Enchantment_Harvest extends Enchantment
     	if(harvestingItem == null)
     		return;
     	
-    	if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantHarvest.effectId, harvestingItem) <= 0)
+    	if(EnchantmentHelper.getEnchantmentLevel(effectId, harvestingItem) <= 0)
     		return;
     	
-    	if(fEvent.block.blockMaterial != Material.plants)
+    	if(fEvent.block.getMaterial() != Material.plants)
     		return;
     	
     	int searchX = fEvent.x-2;
@@ -306,26 +359,24 @@ public class Enchantment_Harvest extends Enchantment
     		searchZ = fEvent.z-3;
     		for(int j = 0; j < 5; j++, searchZ++)
     		{    			
-    			int blockID = fEvent.world.getBlockId(searchX, searchY, searchZ);
+    			Block block = fEvent.world.getBlock(searchX, searchY, searchZ);
     			int blockMeta = fEvent.world.getBlockMetadata(searchX, searchY, searchZ);
     				
-    			if(blockID == 0)
+    			if(block == null)
     				continue;
     			if(blockMeta < 0 || blockMeta > 15)
     				blockMeta = 0;
     			
-    			Block breakingBlock = Block.blocksList[blockID];
-    			
-    			if(breakingBlock.blockMaterial != Material.plants)
+    			if(block.getMaterial() != Material.plants)
     				continue;
     				
-    			ArrayList<ItemStack> itemsDropped = breakingBlock.getBlockDropped(fEvent.world, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel);
+    			ArrayList<ItemStack> itemsDropped = block.getDrops(fEvent.world, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel);
     			ForgeEventFactory.fireBlockHarvesting(itemsDropped, fEvent.world, fEvent.block, searchX, searchY, searchZ, fEvent.blockMetadata, fEvent.fortuneLevel, fEvent.dropChance, fEvent.isSilkTouching, null);
     			
     			if(itemsDropped.isEmpty())
     				continue;
     				
-    			ArrayList<ItemStack> itemsToDrop = fEvent.block.getBlockDropped(fEvent.world, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel);
+    			ArrayList<ItemStack> itemsToDrop = fEvent.block.getDrops(fEvent.world, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel);
         		avgDrop += ForgeEventFactory.fireBlockHarvesting(itemsToDrop, fEvent.world, fEvent.block, searchX, searchY, searchZ, blockMeta, fEvent.fortuneLevel, fEvent.dropChance, fEvent.isSilkTouching, null);
         		for(ItemStack stack : itemsToDrop)
         			fEvent.drops.add(stack);
@@ -335,7 +386,7 @@ public class Enchantment_Harvest extends Enchantment
     	fEvent.dropChance = (avgDrop/brokenBlocks+1);    	
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleHoe(UseHoeEvent fEvent)
     {    	
     	if (!fEvent.entityPlayer.canPlayerEdit(fEvent.x, fEvent.y, fEvent.z, fEvent.world.getBlockMetadata(fEvent.x, fEvent.y, fEvent.z), fEvent.current))
@@ -344,26 +395,34 @@ public class Enchantment_Harvest extends Enchantment
     	if(fEvent.current == null)
     		return;
     	
-    	if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantHarvest.effectId, fEvent.current) <= 0)
+    	if(EnchantmentHelper.getEnchantmentLevel(effectId, fEvent.current) <= 0)
     		return;
     	
-    	Block blockTarget = Block.blocksList[fEvent.world.getBlockId(fEvent.x, fEvent.y, fEvent.z)];
+    	Block blockTarget = fEvent.world.getBlock(fEvent.x, fEvent.y, fEvent.z);
     	
     	if(blockTarget == null)
     		return;
     	
-    	if(blockTarget.blockMaterial != Material.pumpkin)
+    	if(blockTarget.getMaterial() != Material.gourd)
     		return;
     		
-    	int blockID = fEvent.world.getBlockId(fEvent.x, fEvent.y, fEvent.z);
+    	Block block = fEvent.world.getBlock(fEvent.x, fEvent.y, fEvent.z);
     	int blockMeta = fEvent.world.getBlockMetadata(fEvent.x, fEvent.y, fEvent.z);
     			
-    	if(blockID == 0)
+    	if(block == null)
     		return;
     	if(blockMeta < 0 || blockMeta > 15)
     		blockMeta = 0;
     	
-    	Block.blocksList[blockID].dropBlockAsItem(fEvent.world, fEvent.x, fEvent.y, fEvent.z, blockMeta, 0);
+    	block.dropBlockAsItem(fEvent.world, fEvent.x, fEvent.y, fEvent.z, blockMeta, 0);
     	fEvent.world.setBlockToAir(fEvent.x, fEvent.y, fEvent.z);
     }
+    
+    /*
+    @SubscribeEvent
+    public void HandleHoe(AnvilUpdateEvent fEvent)
+    {
+    	
+    }
+    */
 }

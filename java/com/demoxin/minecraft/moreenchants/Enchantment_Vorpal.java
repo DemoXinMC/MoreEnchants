@@ -1,7 +1,6 @@
 package com.demoxin.minecraft.moreenchants;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentDamage;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,14 +14,12 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBook;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Vorpal extends Enchantment {
 	public Enchantment_Vorpal(int fId, int fWeight)
@@ -53,19 +50,18 @@ public class Enchantment_Vorpal extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof EnchantmentDamage || fTest instanceof Enchantment_Mending)
+    	if(fTest == MoreEnchants.enchantMending)
     		return false;
     	return true;
     }
     
+    @Override
     public boolean canApply(ItemStack fTest)
     {
-    	if(fTest.getItem() instanceof ItemSword || fTest.getItem() instanceof ItemBook)
-    		return true;
-        return false;
+    	return Enchantment.sharpness.canApply(fTest);
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingDropsEvent fEvent)
     {
     	if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob")
@@ -82,59 +78,59 @@ public class Enchantment_Vorpal extends Enchantment {
 		if(dmgSource == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantVorpal.effectId, dmgSource) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource) <= 0)
 			return;
 		
 		if(fEvent.entity.worldObj.rand.nextInt(100) < 5)
 		{
 			ItemStack itemHead = null;
 			if(fEvent.entity instanceof EntityCreeper)
-				itemHead = new ItemStack(Item.skull, 1, 4);
+				itemHead = new ItemStack(Items.skull, 1, 4);
 				
 			if(fEvent.entity instanceof EntitySkeleton)
-				itemHead = new ItemStack(Item.skull, 1, 0);
+				itemHead = new ItemStack(Items.skull, 1, 0);
 			
 			if(fEvent.entity instanceof EntityZombie)
-				itemHead = new ItemStack(Item.skull, 1, 2);
+				itemHead = new ItemStack(Items.skull, 1, 2);
 			
 			if(fEvent.entity instanceof EntityPlayer)
 			{
-				itemHead = new ItemStack(Item.skull, 1, 3);
+				itemHead = new ItemStack(Items.skull, 1, 3);
 				itemHead.setTagCompound(new NBTTagCompound());
-				itemHead.getTagCompound().setString("SkullOwner", ((EntityPlayer)fEvent.entity).username);
+				itemHead.getTagCompound().setString("SkullOwner", ((EntityPlayer)fEvent.entity).getCommandSenderName());
 			}
 			
 			if(fEvent.entity instanceof EntitySpider)
 			{
-				itemHead = new ItemStack(Item.skull, 1, 3);
+				itemHead = new ItemStack(Items.skull, 1, 3);
 				itemHead.setTagCompound(new NBTTagCompound());
 				itemHead.getTagCompound().setString("SkullOwner", "MHF_Spider");
 			}
 			
 			if(fEvent.entity instanceof EntityCaveSpider)
 			{
-				itemHead = new ItemStack(Item.skull, 1, 3);
+				itemHead = new ItemStack(Items.skull, 1, 3);
 				itemHead.setTagCompound(new NBTTagCompound());
 				itemHead.getTagCompound().setString("SkullOwner", "MHF_CaveSpider");
 			}
 			
 			if(fEvent.entity instanceof EntityEnderman)
 			{
-				itemHead = new ItemStack(Item.skull, 1, 3);
+				itemHead = new ItemStack(Items.skull, 1, 3);
 				itemHead.setTagCompound(new NBTTagCompound());
 				itemHead.getTagCompound().setString("SkullOwner", "MHF_Enderman");
 			}
 			
 			if(fEvent.entity instanceof EntityPigZombie)
 			{
-				itemHead = new ItemStack(Item.skull, 1, 3);
+				itemHead = new ItemStack(Items.skull, 1, 3);
 				itemHead.setTagCompound(new NBTTagCompound());
 				itemHead.getTagCompound().setString("SkullOwner", "MHF_PigZombie");
 			}
 			
 			if(fEvent.entity instanceof EntityBlaze)
 			{
-				itemHead = new ItemStack(Item.skull, 1, 3);
+				itemHead = new ItemStack(Items.skull, 1, 3);
 				itemHead.setTagCompound(new NBTTagCompound());
 				itemHead.getTagCompound().setString("SkullOwner", "MHF_Blaze");
 			}
@@ -148,7 +144,7 @@ public class Enchantment_Vorpal extends Enchantment {
 	
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingHurtEvent fEvent)
     {
     	if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob")
@@ -165,7 +161,7 @@ public class Enchantment_Vorpal extends Enchantment {
 		if(dmgSource == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantVorpal.effectId, dmgSource) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource) <= 0)
 			return;
 		
 		if(fEvent.entity.worldObj.rand.nextInt(100) < 5)

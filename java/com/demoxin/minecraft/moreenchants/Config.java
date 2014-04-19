@@ -1,10 +1,10 @@
 package com.demoxin.minecraft.moreenchants;
 
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
 
 public class Config
 {
-    private int defaultEnchantID = 60;
+    private int defaultEnchantID = 70;
     
     // Weapons
     public final int enchMendingID;
@@ -56,6 +56,27 @@ public class Config
     public final boolean enchSteadfastEnable;
     public final int enchSilenceID;
     public final boolean enchSilenceEnable;
+    
+    public final int enchSpellbaneID;
+    public final boolean enchSpellbaneEnable;
+    public final int enchQuickdrawID;
+    public final boolean enchQuickdrawEnable;
+    
+    public final int enchRegenID;
+    public final boolean enchRegenEnable;
+    public final int enchMagnetID;
+    public final boolean enchMagnetEnable;
+    public final int enchSoulboundID;
+    public final boolean enchSoulboundEnable;
+    public final int enchHeatID;
+    public final boolean enchHeatEnable;
+    public final int enchScattershotID;
+    public final boolean enchScattershotEnable;
+    public final int enchStrikingID;
+    public final boolean enchStrikingEnable;
+    
+    public final boolean charms;
+    public final int charmRarity;
  
     public Config(Configuration config)
     {
@@ -85,6 +106,7 @@ public class Config
         enchFleetfootID = config.get("Armor", "FleetfootID", defaultEnchantID+9).getInt();
         enchFleetfootEnable = config.get("Armor", "FleetfootEnable", true).getBoolean(true);
         
+        // 1.2
         enchMobilityID = config.get("Armor", "MobilityID", defaultEnchantID+10).getInt();
         enchMobilityEnable = config.get("Armor", "MobilityEnable", true).getBoolean(true);
         enchHarvestID = config.get("Tools", "HarvestID", defaultEnchantID+11).getInt();
@@ -111,6 +133,29 @@ public class Config
         enchSteadfastEnable = config.get("Weapons", "SteadfastEnable", true).getBoolean(true);
         enchSilenceID = config.get("Weapons", "SilenceID", defaultEnchantID+22).getInt();
         enchSilenceEnable = config.get("Weapons", "SilenceEnable", true).getBoolean(true);
+        
+        // 1.3
+        enchSpellbaneID = config.get("Weapons", "SpellbaneID", defaultEnchantID+23).getInt();
+        enchSpellbaneEnable = config.get("Weapons", "SpellbaneEnable", true).getBoolean(true);
+        enchQuickdrawID = config.get("Weapons", "QuickdrawID", defaultEnchantID+24).getInt();
+        enchQuickdrawEnable = config.get("Weapons", "QuickdrawEnable", true).getBoolean(true);
+        
+        charms = config.get("Charms", "Enable", true).getBoolean(true);
+        charmRarity = config.get("Charms", "Rarity", 200).getInt();
+        
+        // 1.4
+        enchRegenID = config.get("Charms", "RegenerationID", defaultEnchantID+25).getInt();
+        enchRegenEnable = config.get("Charms", "RegenerationEnable", true).getBoolean(true);
+        enchMagnetID = config.get("Charms", "MagnetizeID", defaultEnchantID+26).getInt();
+        enchMagnetEnable = config.get("Charms", "MagnetizeEnable", true).getBoolean(true);
+        enchHeatID = config.get("Tools", "HeatTouchedID", defaultEnchantID+27).getInt();
+        enchHeatEnable = config.get("Tools", "HeatTouchedEnable", true).getBoolean(true);
+        enchSoulboundID = config.get("Misc", "SoulboundID", defaultEnchantID+28).getInt();
+        enchSoulboundEnable = config.get("Misc", "SoulboundEnable", true).getBoolean(true);
+        enchScattershotID = config.get("Weapons", "ScattershotID", defaultEnchantID+29).getInt();
+        enchScattershotEnable = config.get("Weapons", "ScattershotEnable", true).getBoolean(true);
+        enchStrikingID = config.get("Weapons", "StrikingID", defaultEnchantID+30).getInt();
+        enchStrikingEnable = config.get("Weapons", "StrikingEnable", true).getBoolean(true);
        
         if(config.hasChanged())
         {

@@ -1,23 +1,23 @@
 package com.demoxin.minecraft.moreenchants;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraftforge.common.Configuration;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = MoreEnchants.MODID, name = MoreEnchants.NAME, version = MoreEnchants.VERSION)
-@NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class MoreEnchants {
 	// Mod Info
 	public static final String MODID = "MoreEnchants";
 	public static final String NAME = "MoreEnchants";
-	public static final String VERSION = "1.2";
+	public static final String VERSION = "1.4.0";
 	// Mod Info End
 	
 	// Singleton
@@ -50,6 +50,18 @@ public class MoreEnchants {
 	public static Enchantment enchantHarvest;
 	public static Enchantment enchantResurrection;
 	
+	public static Enchantment enchantSpellbane;
+	public static Enchantment enchantQuickdraw;
+	
+	public static Enchantment enchantRegen;
+	public static Enchantment enchantMagnet;
+	public static Enchantment enchantSoulbound;
+	public static Enchantment enchantHeat;
+	public static Enchantment enchantScattershot;
+	public static Enchantment enchantStriking;
+	
+	public static Item itemCharm;
+	
 	// bits
 	public static int bitMENDING = 1;
 	public static int bitMENDING2 = 2;
@@ -64,6 +76,12 @@ public class MoreEnchants {
     public void preInit(FMLPreInitializationEvent fEvent)
     {
     	config = new Config(new Configuration(fEvent.getSuggestedConfigurationFile()));
+    	
+    	if(config.charms)
+	    {
+	    	itemCharm = new Item_Charm(config.charmRarity);
+	    	GameRegistry.registerItem(itemCharm, "charm", MODID);
+	    }
     }
     
     @EventHandler
@@ -77,6 +95,9 @@ public class MoreEnchants {
     	
     	if(config.enchExplosiveEnable)
     		enchantExplosive = new Enchantment_Explosive(config.enchExplosiveID, 1);
+    	
+    	if(config.enchQuickdrawEnable)
+    		enchantQuickdraw = new Enchantment_Quickdraw(config.enchQuickdrawID, 1);
     	
     	if(config.enchVenomEnable)
 	    	enchantVenom = new Enchantment_Venom(config.enchVenomID, 2);
@@ -92,6 +113,9 @@ public class MoreEnchants {
     	
     	if(config.enchDowsingEnable)
 	    	enchantDowsing = new Enchantment_Dowsing(config.enchDowsingID, 5);
+    	
+    	if(config.enchSpellbaneEnable)
+    		enchantSpellbane = new Enchantment_Spellbane(config.enchSpellbaneID, 5);
     	
     	if(config.enchMendingEnable)
     		enchantMending = new Enchantment_Mending(config.enchMendingID, 2);
@@ -149,6 +173,9 @@ public class MoreEnchants {
     	if(config.enchExplosiveEnable)
     		MinecraftForge.EVENT_BUS.register(enchantExplosive);
     	
+    	if(config.enchQuickdrawEnable)
+    		MinecraftForge.EVENT_BUS.register(enchantQuickdraw);
+    	
     	if(config.enchVenomEnable)
     		MinecraftForge.EVENT_BUS.register(enchantVenom);
     	
@@ -163,6 +190,9 @@ public class MoreEnchants {
     	
     	if(config.enchDowsingEnable)
     		MinecraftForge.EVENT_BUS.register(enchantDowsing);
+    	
+    	if(config.enchSpellbaneEnable)
+    		MinecraftForge.EVENT_BUS.register(enchantSpellbane);
     	
     	if(config.enchMendingEnable)
     		MinecraftForge.EVENT_BUS.register(enchantMending);
@@ -205,6 +235,15 @@ public class MoreEnchants {
 	    	MinecraftForge.EVENT_BUS.register(enchantResurrection);
 	    
 	    if(config.enchHarvestEnable)
+	    {
 	    	MinecraftForge.EVENT_BUS.register(enchantHarvest);
+	    	((Enchantment_Harvest)enchantHarvest).Prepare();
+	    }
+	    
+	    if(config.charms)
+	    {
+	    	MinecraftForge.EVENT_BUS.register(itemCharm);
+	    	((Item_Charm)itemCharm).addEnchants();
+	    }
     }
 }

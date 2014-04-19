@@ -1,17 +1,15 @@
 package com.demoxin.minecraft.moreenchants;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentFireAspect;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentKnockback;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Leech extends Enchantment 
 {
@@ -43,11 +41,11 @@ public class Enchantment_Leech extends Enchantment
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Mending || fTest instanceof Enchantment_Leech || fTest instanceof Enchantment_Execution)
-    		return false;
-    	if(fTest instanceof EnchantmentKnockback || fTest instanceof EnchantmentFireAspect)
-        	return false;
-    	return true;
+    	if(fTest == MoreEnchants.enchantMending || fTest == MoreEnchants.enchantLeech || fTest == MoreEnchants.enchantExecution)
+			return false;
+		if(fTest == Enchantment.knockback || fTest == Enchantment.fireAspect || fTest == MoreEnchants.enchantIceAspect || fTest == MoreEnchants.enchantVenom)
+			return false;
+		return true;
     }
     
     @Override
@@ -58,7 +56,7 @@ public class Enchantment_Leech extends Enchantment
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingHurtEvent fEvent)
     {
 		if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob")
@@ -73,7 +71,7 @@ public class Enchantment_Leech extends Enchantment
 		if(weapon == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantLeech.effectId, weapon) != 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, weapon) != 0)
 			attacker.heal(fEvent.ammount*0.1F);
 			
     }

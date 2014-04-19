@@ -6,8 +6,8 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Berserking extends Enchantment {
 	public Enchantment_Berserking(int fId, int fWeight)
@@ -38,7 +38,7 @@ public class Enchantment_Berserking extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Berserking)
+    	if(fTest == MoreEnchants.enchantBerserk || fTest == MoreEnchants.enchantSteadfast)
     		return false;
     	return true;
     }
@@ -56,7 +56,7 @@ public class Enchantment_Berserking extends Enchantment {
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingHurtEvent fEvent)
     {
 		if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob")
@@ -66,13 +66,13 @@ public class Enchantment_Berserking extends Enchantment {
 			return;
 		
 		EntityLivingBase attacker = (EntityLivingBase)fEvent.source.getSourceOfDamage();
-		ItemStack armorChest = attacker.getCurrentItemOrArmor(3);
+		ItemStack armorChest = attacker.getEquipmentInSlot(3);
 		
 		if(armorChest == null)
 			return;
 		
 		// See if they have berserking.  Berserking only needs to respect its existence.
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantBerserk.effectId, armorChest) != 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, armorChest) != 0)
 		{
 			// We have berserking, let's go ahead and figure out how much to amplify the damage by.
 			float attackerHealthPercent = attacker.getHealth() / attacker.getMaxHealth();

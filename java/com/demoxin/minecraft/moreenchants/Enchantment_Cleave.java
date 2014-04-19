@@ -5,7 +5,6 @@ import java.util.ListIterator;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentKnockback;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,8 +18,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Cleave extends Enchantment {
 	public Enchantment_Cleave(int fId, int fWeight)
@@ -51,7 +50,7 @@ public class Enchantment_Cleave extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof EnchantmentKnockback || fTest instanceof Enchantment_Cleave)
+    	if(fTest == this || fTest == Enchantment.knockback)
     		return false;
     	return true;
     }
@@ -63,7 +62,7 @@ public class Enchantment_Cleave extends Enchantment {
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingAttackEvent fEvent)
     {
     	if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob")
@@ -80,11 +79,11 @@ public class Enchantment_Cleave extends Enchantment {
 		if(dmgSource == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantCleave.effectId, dmgSource) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource) <= 0)
 			return;
 		
 		// We have a cleaving level, let's figure out our damage value.
-		float splashDamage = fEvent.ammount * (EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantCleave.effectId, dmgSource) * 0.25F);
+		float splashDamage = fEvent.ammount * (EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource) * 0.25F);
 		
 		// Next, find our entities to hit.
 		AxisAlignedBB boundBox = AxisAlignedBB.getBoundingBox(attacker.posX-5, attacker.posY-5, attacker.posZ-5, attacker.posX+5, attacker.posY+5, attacker.posZ+5);

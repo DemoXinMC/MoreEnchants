@@ -4,14 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentArrowFire;
-import net.minecraft.enchantment.EnchantmentArrowKnockback;
-import net.minecraft.enchantment.EnchantmentFireAspect;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentKnockback;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.WatchableObject;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBook;
@@ -20,9 +16,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Mending extends Enchantment {
 	public Enchantment_Mending(int fId, int fWeight)
@@ -52,10 +48,19 @@ public class Enchantment_Mending extends Enchantment {
     
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Mending || fTest instanceof Enchantment_Leech || fTest instanceof Enchantment_Execution)
+    	if(fTest == MoreEnchants.enchantMending)
     		return false;
-    	if(fTest instanceof EnchantmentKnockback || fTest instanceof EnchantmentArrowKnockback || fTest instanceof EnchantmentArrowFire || fTest instanceof EnchantmentFireAspect)
-        	return false;
+    	if(fTest == Enchantment.knockback || fTest == Enchantment.punch)
+    		return false;
+    	if(fTest == Enchantment.fireAspect || fTest == Enchantment.flame)
+    		return false;
+    	if(fTest == MoreEnchants.enchantFrost || fTest == MoreEnchants.enchantIceAspect)
+    		return false;
+    	if(fTest == MoreEnchants.enchantExecution || fTest == MoreEnchants.enchantLeech)
+    		return false;
+    	if(fTest == MoreEnchants.enchantVorpal)
+    		return false;
+    	
     	return true;
     }
     
@@ -66,7 +71,7 @@ public class Enchantment_Mending extends Enchantment {
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleArrowSpawn(EntityJoinWorldEvent fEvent)
     {
     	if(!(fEvent.entity instanceof EntityArrow))
@@ -81,7 +86,7 @@ public class Enchantment_Mending extends Enchantment {
 		if(itemBow == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantMending.effectId, itemBow) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, itemBow) <= 0)
 			return;
 		
 		boolean bitsafe = false;
@@ -98,13 +103,13 @@ public class Enchantment_Mending extends Enchantment {
 		if(!bitsafe)
 			fEvent.entity.getDataWatcher().addObject(24, Integer.valueOf(0));
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantMending.effectId, itemBow) == 1)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, itemBow) == 1)
 			fEvent.entity.getDataWatcher().updateObject(24, fEvent.entity.getDataWatcher().getWatchableObjectInt(24) + Integer.valueOf(MoreEnchants.bitMENDING));
 		else
 			fEvent.entity.getDataWatcher().updateObject(24, fEvent.entity.getDataWatcher().getWatchableObjectInt(24) + Integer.valueOf(MoreEnchants.bitMENDING2));
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingAttackEvent fEvent)
     {
     	if(fEvent.source.damageType != "player" && fEvent.source.damageType != "mob" && fEvent.source.damageType != "arrow")
@@ -166,7 +171,7 @@ public class Enchantment_Mending extends Enchantment {
 			if(dmgSource == null)
 				return;
 			
-			int levelMending = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantMending.effectId, dmgSource);
+			int levelMending = EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource);
 			if(levelMending > 0)
 			{
 				fEvent.setCanceled(true);

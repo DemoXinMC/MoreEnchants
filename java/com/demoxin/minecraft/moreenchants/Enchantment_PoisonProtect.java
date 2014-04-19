@@ -5,13 +5,11 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_PoisonProtect extends Enchantment {
 	public Enchantment_PoisonProtect(int fId, int fWeight)
@@ -49,12 +47,10 @@ public class Enchantment_PoisonProtect extends Enchantment {
     
     public boolean canApply(ItemStack fTest)
     {
-    	if(fTest.getItem() instanceof ItemArmor || fTest.getItem() instanceof ItemBook)
-    		return true;
-        return false;
+    	return Enchantment.fireProtection.canApply(fTest);
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingHurtEvent fEvent)
     {
     	if(fEvent.source != DamageSource.magic)
@@ -65,10 +61,10 @@ public class Enchantment_PoisonProtect extends Enchantment {
     	
     	EntityLivingBase victim = (EntityLivingBase)fEvent.entity;
 		int[] levelProtect = new int[4];
-		levelProtect[0] = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantPoisonProtect.effectId, victim.getCurrentItemOrArmor(4));
-		levelProtect[1] = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantPoisonProtect.effectId, victim.getCurrentItemOrArmor(3));
-		levelProtect[2] = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantPoisonProtect.effectId, victim.getCurrentItemOrArmor(2));
-		levelProtect[3] = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantPoisonProtect.effectId, victim.getCurrentItemOrArmor(1));
+		levelProtect[0] = EnchantmentHelper.getEnchantmentLevel(effectId, victim.getEquipmentInSlot(4));
+		levelProtect[1] = EnchantmentHelper.getEnchantmentLevel(effectId, victim.getEquipmentInSlot(3));
+		levelProtect[2] = EnchantmentHelper.getEnchantmentLevel(effectId, victim.getEquipmentInSlot(2));
+		levelProtect[3] = EnchantmentHelper.getEnchantmentLevel(effectId, victim.getEquipmentInSlot(1));
 		
 		for(int i = 0; i < levelProtect.length; ++i)
 		{

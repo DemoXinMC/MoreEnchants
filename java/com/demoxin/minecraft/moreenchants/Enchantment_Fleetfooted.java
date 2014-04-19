@@ -7,12 +7,12 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeInstance;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Fleetfooted extends Enchantment {
 	
@@ -46,7 +46,7 @@ public class Enchantment_Fleetfooted extends Enchantment {
     @Override
     public boolean canApplyTogether(Enchantment fTest)
     {
-    	if(fTest instanceof Enchantment_Fleetfooted)
+    	if(fTest == this)
     		return false;
     	return true;
     }
@@ -64,14 +64,14 @@ public class Enchantment_Fleetfooted extends Enchantment {
         return false;
     }
     
-    @ForgeSubscribe
+    @SubscribeEvent
     public void HandleEnchant(LivingUpdateEvent fEvent)
     {
     	if(!(fEvent.entity instanceof EntityLivingBase))
     		return;
     	
     	EntityLivingBase entity = (EntityLivingBase)fEvent.entity;
-		ItemStack boots = entity.getCurrentItemOrArmor(1);
+		ItemStack boots = entity.getEquipmentInSlot(1);
 		
 		if(boots == null)
 		{
@@ -79,7 +79,7 @@ public class Enchantment_Fleetfooted extends Enchantment {
 			return;
 		}
 		
-		int level = EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantFleetfoot.effectId, boots);
+		int level = EnchantmentHelper.getEnchantmentLevel(effectId, boots);
 		
 		if(level > 0)
 			AddSpeedBuff(entity);
@@ -89,7 +89,7 @@ public class Enchantment_Fleetfooted extends Enchantment {
     
     private void AddSpeedBuff(EntityLivingBase fEntity)
 	{
-		AttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+		IAttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
 		
 		if(speedAttr.getModifier(fleetfootUUID) != null)
 			return;
@@ -103,7 +103,7 @@ public class Enchantment_Fleetfooted extends Enchantment {
 	
 	private void RemoveSpeedBuff(EntityLivingBase fEntity)
 	{
-		AttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
+		IAttributeInstance speedAttr = fEntity.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.movementSpeed);
 				
 		if(speedAttr.getModifier(fleetfootUUID) == null)
 			return;

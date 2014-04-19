@@ -5,17 +5,16 @@ import net.minecraft.enchantment.EnchantmentDamage;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityMagmaCube;
+import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class Enchantment_Dowsing extends Enchantment {
-	public Enchantment_Dowsing(int fId, int fWeight)
+public class Enchantment_Spellbane extends Enchantment {
+	public Enchantment_Spellbane(int fId, int fWeight)
 	{
 		super(fId, fWeight, EnumEnchantmentType.weapon);
-		this.setName("dowsing");
+		this.setName("spellbane");
 		addToBookList(this);
 	}
 	
@@ -71,13 +70,12 @@ public class Enchantment_Dowsing extends Enchantment {
 		if(EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource) <= 0)
 			return;
 		
-		int levelDowsing = EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource);
-		if(fEvent.entity instanceof EntityBlaze || fEvent.entity instanceof EntityMagmaCube)
+		int levelSpellbane = EnchantmentHelper.getEnchantmentLevel(effectId, dmgSource);
+		if(fEvent.entity instanceof EntityWitch)
 		{				
-			fEvent.ammount = fEvent.ammount + (2.5F * levelDowsing);
-			if(levelDowsing > 4)
+			fEvent.ammount = fEvent.ammount + (2.5F * levelSpellbane);
+			if(levelSpellbane > 4)
 				fEvent.ammount = fEvent.ammount + 0.5F;
 		}
     }
 }
-

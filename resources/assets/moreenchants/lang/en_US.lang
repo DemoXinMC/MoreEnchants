@@ -22,3 +22,9 @@ enchantment.mobility=Mobility
 enchantment.resurrection=Resurrection
 enchantment.steadfast=Steadfast
 enchantment.vorpal=Vorpal
+
+enchantment.spellbane=Spellbane
+enchantment.quickdraw=Quickdraw
+
+item.charm.name=Enchanted Charm
+charm.tooltip.help=Keep In Inventory To Gain Effects

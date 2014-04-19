@@ -1,19 +1,9 @@
-[
-{
+[{
   "modid": "MoreEnchants",
   "name": "MoreEnchants",
-  "description": "New Enchantments!  *** 1.2.2 *** Updated assets to proper versions for the new enchantments!",
-  "version": "1.2.2",
-  "credits": "Created by DemoXin",
-  "logoFile": "",
-  "mcversion": "1.6",
+  "description": "A plethora of new enchantments! UPDATED TO 1.7",
+  "authors": ["DemoXin"],
   "url": "http://minecraft.demoxin.com/MoreEnchants",
-  "updateUrl": "",
-  "authors": [ "DemoXin" ],
-  "parent":"",
-  "screenshots": [],
-  "dependencies": [
-         "Forge"
-]
-}
-]
+  "version": "${version}",
+  "mcversion": "${mcversion}"
+}]

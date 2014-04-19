@@ -3,18 +3,17 @@ package com.demoxin.minecraft.moreenchants;
 import java.util.List;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentArrowFire;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.WatchableObject;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.PlaySoundAtEntityEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Enchantment_Explosive extends Enchantment
 {
@@ -46,7 +45,9 @@ public class Enchantment_Explosive extends Enchantment
 	@Override
 	public boolean canApplyTogether(Enchantment fTest)
 	{
-		if(fTest instanceof Enchantment_Poison || fTest instanceof EnchantmentArrowFire || fTest instanceof Enchantment_Explosive || fTest instanceof Enchantment_Frost)
+		if(fTest == Enchantment.infinity || fTest == MoreEnchants.enchantQuickdraw || fTest == MoreEnchants.enchantExplosive)
+			return false;
+		if(fTest == MoreEnchants.enchantPoison || fTest == Enchantment.flame || fTest == MoreEnchants.enchantFrost)
 			return false;
 		return true;
 	}
@@ -58,7 +59,7 @@ public class Enchantment_Explosive extends Enchantment
 	    return false;
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void HandleArrowSpawn(EntityJoinWorldEvent fEvent)
 	{
 		if(!(fEvent.entity instanceof EntityArrow))
@@ -73,7 +74,7 @@ public class Enchantment_Explosive extends Enchantment
 		if(itemBow == null)
 			return;
 		
-		if(EnchantmentHelper.getEnchantmentLevel(MoreEnchants.enchantExplosive.effectId, itemBow) <= 0)
+		if(EnchantmentHelper.getEnchantmentLevel(effectId, itemBow) <= 0)
 			return;
 		
 		boolean bitsafe = false;
@@ -93,7 +94,7 @@ public class Enchantment_Explosive extends Enchantment
 		fEvent.entity.getDataWatcher().updateObject(24, fEvent.entity.getDataWatcher().getWatchableObjectInt(24) + Integer.valueOf(MoreEnchants.bitEXPLODE));
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void HandleEnchant(PlaySoundAtEntityEvent fEvent)
 	{
 		if(!(fEvent.entity instanceof EntityArrow))
@@ -122,7 +123,8 @@ public class Enchantment_Explosive extends Enchantment
 	
 		if((infoBits & MoreEnchants.bitEXPLODE) != 0)
 		{
-			strikingArrow.worldObj.newExplosion(strikingArrow, strikingArrow.posX, strikingArrow.posY, strikingArrow.posZ, 2.0F, false, false);
+			if(!strikingArrow.isInWater())
+				strikingArrow.worldObj.newExplosion(strikingArrow, strikingArrow.posX, strikingArrow.posY, strikingArrow.posZ, 2.0F, false, false);
 			strikingArrow.setDead();
 		}
 	}
