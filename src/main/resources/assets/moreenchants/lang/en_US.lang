@@ -1,0 +1,43 @@
+enchantment.mending=Mending
+enchantment.soulbound=Soulbound
+enchantment.resurrection=Resurrection
+
+enchantment.agility=Agility
+enchantment.berserk=Berserking
+enchantment.cloudwalker=Cloudwalker
+enchantment.fleetfoot=Fleetfooted
+enchantment.hover=Hover
+enchantment.knowledge=Knowledge
+enchantment.mobility=Mobility
+enchantment.poisonprotect=Poison Protection
+enchantment.steadfast=Steadfast
+enchantment.waterwalker=Waterwalker
+
+enchantment.cleave=Cleave
+enchantment.defusing=Defusing
+enchantment.disjunction=Disjunction
+enchantment.dowsing=Dowsing
+enchantment.execute=Execution
+enchantment.iceaspect=Ice Aspect
+enchantment.leech=Leech
+enchantment.silence=Silence
+enchantment.spellbane=Spellbane
+enchantment.striking=Striking
+enchantment.venom=Venom
+enchantment.volatile=Volatile
+enchantment.vorpal=Vorpal
+
+enchantment.explosive=Explosive
+enchantment.frost=Frost
+enchantment.poison=Poison
+enchantment.quickdraw=Quickdraw
+enchantment.scattershot=Scattershot
+
+enchantment.butcher=Butcher
+enchantment.harvest=Harvest
+enchantment.heat=Heat-Touched
+
+enchantment.magnetize=Magnetize
+enchantment.regen=Regeneration
+
+item.charm.name=Enchanted Charm
