@@ -1,9 +1,0 @@
-[{
-  "modid": "MoreEnchants",
-  "name": "MoreEnchants",
-  "description": "A plethora of new enchantments! UPDATED TO 1.7",
-  "authors": ["DemoXin"],
-  "url": "http://minecraft.demoxin.com/MoreEnchants",
-  "version": "${version}",
-  "mcversion": "${mcversion}"
-}]
