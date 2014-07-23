@@ -15,7 +15,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EnchantmentResurrection extends Enchantment
 {
-	protected EnchantmentResurrection(int fId, int fWeight) {
+	public EnchantmentResurrection(int fId, int fWeight) {
 		super(fId, fWeight, EnumEnchantmentType.all);
 		this.setName("resurrection");
 		addToBookList(this);

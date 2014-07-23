@@ -8,8 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class EnchantmentKnowledge extends Enchantment {
-	protected EnchantmentKnowledge(int fId, int fWeight) {
+public class EnchantmentKnowledge extends Enchantment
+{
+	public EnchantmentKnowledge(int fId, int fWeight) {
 		super(fId, fWeight, EnumEnchantmentType.armor_head);
 		this.setName("knowledge");
 		addToBookList(this);

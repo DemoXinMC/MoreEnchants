@@ -28,7 +28,7 @@ public class EnchantmentHarvest extends Enchantment
 {
 	protected List<ItemStack> harvestableOres;
 	
-	protected EnchantmentHarvest(int par1, int par2)
+	public EnchantmentHarvest(int par1, int par2)
     {
         super(par1, par2, EnumEnchantmentType.digger);
         this.setName("harvest");
