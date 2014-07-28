@@ -19,7 +19,7 @@ public class HoeFixTransformer implements IClassTransformer
 {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (name.equals("net.minecraft.item.ItemHoe")) {
+        if (transformedName.equals("net.minecraft.item.ItemHoe")) {
             return patchClass(name, basicClass, Launch.blackboard.get("fml.deobfuscatedEnvironment").equals(false));
         }
 
@@ -51,21 +51,12 @@ public class HoeFixTransformer implements IClassTransformer
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(classNode, 0);
-
-        Iterator<MethodNode> methods = classNode.methods.iterator();
-        while(methods.hasNext())
-        {
-            MethodNode m = methods.next();
-    
-            //Check if this is doExplosionB and it's method signature is (Z)V which means that it accepts a boolean (Z) and returns a void (V)
-            if ((m.name.equals(methodGetItemEnchantability) && m.desc.equals("()I")))
-            {
-                m.instructions.clear();
-                m.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/item/ItemHoe", fieldToolMaterial, Type.getObjectType("net/minecraft/item/Item$ToolMaterial").toString()));
-                m.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/Item$ToolMaterial", methodGetEnchantability, "()I"));
-                m.instructions.add(new InsnNode(Opcodes.IRETURN));
-            }
-        }
+        
+        MethodNode newMethod = new MethodNode(Opcodes.ACC_PUBLIC, methodGetItemEnchantability, "()I", null, null);
+        newMethod.instructions.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/item/ItemHoe", fieldToolMaterial, Type.getObjectType("net/minecraft/item/Item$ToolMaterial").toString()));
+        newMethod.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/item/Item$ToolMaterial", methodGetEnchantability, "()I"));
+        newMethod.instructions.add(new InsnNode(Opcodes.IRETURN));
+        classNode.methods.add(newMethod);
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
