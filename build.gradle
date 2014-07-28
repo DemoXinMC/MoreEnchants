@@ -26,6 +26,12 @@ minecraft {
     assetDir = "eclipse/assets"
 }
 
+jar {
+	manifest {
+			attributes 'FMLCorePlugin': 'com.demoxin.minecraft.moreenchants.hoefix.HoeFixCoremod'
+		}
+}
+
 dependencies {
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
