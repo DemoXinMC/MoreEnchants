@@ -1,0 +1,30 @@
+enchantment.mending=Ремонт
+enchantment.cleave=Рассечение
+enchantment.defusing=Обезвреживание
+enchantment.poison=Отравление
+enchantment.venom=Яд
+
+enchantment.poisonprotect=Защита от яда
+enchantment.knowledge=Знание
+enchantment.berserk=Берсерк
+enchantment.agility=Ловкость
+enchantment.fleetfoot=Летящий шаг
+
+enchantment.disjunction=Разъединение
+enchantment.dowsing=Лозоискательство
+enchantment.execute=Опустошение
+enchantment.explosive=Взрывоопасность
+enchantment.frost=Заморозка
+enchantment.iceaspect=Аспект льда
+enchantment.harvest=Сбор
+enchantment.leech=Кровосос
+enchantment.mobility=Мобильность
+enchantment.resurrection=Воскрешение
+enchantment.steadfast=Стойкость
+enchantment.vorpal=Отрезание
+
+enchantment.spellbane=Заклинание проклятия
+enchantment.quickdraw=Быстрая стрельба
+
+item.charm.name=Зачарованный амулет
+charm.tooltip.help=Держите в инвентаре, для получения эффекта
