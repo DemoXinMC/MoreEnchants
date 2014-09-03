@@ -128,10 +128,11 @@ public class ItemCharm extends Item
 		if(fEvent.entity.worldObj.rand.nextInt(rarity) > 1)
 			return;
 		
-		int dropTexture = (fEvent.entity.worldObj.rand.nextInt(icons.length)-1);
+		// rand.nextInt(icons.length) yields [0..8) which fit perfectly into the icon array
+		int dropTexture = (fEvent.entity.worldObj.rand.nextInt(icons.length));
 		ItemStack dropCharm = new ItemStack(this, 1, dropTexture);
 		
-		Enchantment dropEnchant = validEnchants.get(fEvent.entity.worldObj.rand.nextInt(validEnchants.size())+1);
+		Enchantment dropEnchant = validEnchants.get(fEvent.entity.worldObj.rand.nextInt(validEnchants.size())); // similar
 		dropCharm.addEnchantment(dropEnchant, 1);
 		fEvent.drops.add(new EntityItem(fEvent.entity.worldObj, fEvent.entity.posX, fEvent.entity.posY, fEvent.entity.posZ, dropCharm));
 	}
